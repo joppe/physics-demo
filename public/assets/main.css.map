@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./sass/main.scss"],"names":[],"mappings":"AAAA,SAAS,kBAAkB,OAAO,MAAM,6BAA6B,SAAS,kBAAkB,gB","file":"main.css","sourcesContent":[".c-layer{position:absolute;left:0;top:0;background-color:transparent}.c-stage{position:relative;overflow:hidden}"],"sourceRoot":""}

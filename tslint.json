@@ -5,10 +5,12 @@
     ],
     "jsRules": {},
     "rules": {
+        "array-type": false,
         "missing-jsdoc": false,
         "no-implicit-dependencies": false,
         "no-reserved-keywords": false,
         "no-submodule-imports": false,
+        "prefer-array-literal": false,
         "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"]
     },
     "rulesDirectory": []
