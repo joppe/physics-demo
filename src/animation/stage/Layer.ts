@@ -43,7 +43,7 @@ export class Layer {
         });
     }
 
-    public getAsset(id: string): IAsset | undefined {
+    public getAsset(id: string): IAsset {
         const assetConfig: IAssetConfig | undefined = this._assetConfigs.find((config: IAssetConfig): boolean => {
             return config.id === id;
         });

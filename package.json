@@ -44,6 +44,7 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
+    "@apestaartje/array": "^1.1.0",
     "@apestaartje/geometry": "^1.2.2"
   }
 }

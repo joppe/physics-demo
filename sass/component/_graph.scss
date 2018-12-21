@@ -1,0 +1,10 @@
+.c-graph {
+    position: relative;
+    overflow: hidden;
+}
+
+.c-graph__layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

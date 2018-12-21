@@ -20,11 +20,12 @@ export class Stage {
         this.addLayer('root', 0);
     }
 
-    public addLayer(id: string, depth: number): void {
+    public addLayer(id: string, depth: number): Layer {
+        const layer: Layer = new Layer(this._container, this._size);
         const layerConfigs: Array<ILayerConfig> = this._layerConfigs.concat({
             depth,
             id,
-            layer: new Layer(this._container, this._size)
+            layer
         });
 
         layerConfigs.sort((a: ILayerConfig, b: ILayerConfig): number => {
@@ -40,6 +41,8 @@ export class Stage {
         });
 
         this._layerConfigs = layerConfigs;
+
+        return layer;
     }
 
     public removeLayer(id: string): void {
@@ -48,7 +51,7 @@ export class Stage {
         });
     }
 
-    public getLayer(id: string): Layer | undefined {
+    public getLayer(id: string): Layer {
         const layerConfig: ILayerConfig | undefined = this._layerConfigs.find((config: ILayerConfig): boolean => {
             return config.id === id;
         });
