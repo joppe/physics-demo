@@ -94,8 +94,8 @@ export class Graph {
         for (const point of points) {
             if (previous !== undefined) {
                 line(
-                    previous,
-                    point,
+                    this._transform.transformPoint(previous),
+                    this._transform.transformPoint(point),
                     styling,
                     this._foreground.context
                 );
@@ -148,10 +148,7 @@ export class Graph {
 
             text(
                 String(y),
-                {
-                    x: point.x - 30,
-                    y: point.y + 5
-                },
+                { x: point.x - 30, y: point.y + 5 },
                 styling,
                 this._background.context
             );
@@ -169,8 +166,8 @@ export class Graph {
 
         for (const x of arr.iterator.range(this._xRange.min, this._xRange.max, xStep)) {
             line(
-                { x, y: this._yRange.min },
-                { x, y: this._yRange.max },
+                this._transform.transformPoint({ x, y: this._yRange.min }),
+                this._transform.transformPoint({ x, y: this._yRange.max }),
                 styling,
                 this._background.context
             );
@@ -178,8 +175,8 @@ export class Graph {
 
         for (const y of arr.iterator.range(this._yRange.min, this._yRange.max, yStep)) {
             line(
-                { x: this._xRange.min, y },
-                { x: this._xRange.max, y },
+                this._transform.transformPoint({ x: this._xRange.min, y }),
+                this._transform.transformPoint({ x: this._xRange.max, y }),
                 styling,
                 this._background.context
             );
@@ -201,8 +198,8 @@ export class Graph {
         }
 
         line(
-            { x: this._xRange.min, y },
-            { x: this._xRange.max, y },
+            this._transform.transformPoint({ x: this._xRange.min, y }),
+            this._transform.transformPoint({ x: this._xRange.max, y }),
             styling,
             this._background.context
         );
@@ -223,8 +220,8 @@ export class Graph {
         }
 
         line(
-            { x, y: this._yRange.min },
-            { x, y: this._yRange.max },
+            this._transform.transformPoint({ x, y: this._yRange.min }),
+            this._transform.transformPoint({ x, y: this._yRange.max }),
             styling,
             this._background.context
         );
