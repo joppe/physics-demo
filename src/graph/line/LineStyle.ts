@@ -2,7 +2,7 @@
  * Line Style
  */
 
-export type Style = {
+export type LineStyle = {
     strokeStyle: string;
     lineWidth: number;
 };

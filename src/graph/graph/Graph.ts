@@ -2,11 +2,14 @@ import * as arr from '@apestaartje/array';
 import * as geometry from '@apestaartje/geometry';
 
 import { Canvas } from 'app/dom/element/Canvas';
+import { Axis, X_AXIS, Y_AXIS } from 'app/graph/graph/Axis';
+import { coordinatesToPoint } from 'app/graph/graph/coordinatesToPoint';
 import { line } from 'app/graph/line/line';
-import { Style as LineStyle } from 'app/graph/line/Style';
+import { LineStyle } from 'app/graph/line/LineStyle';
+import { inRange } from 'app/graph/range/inRange';
 import { Range } from 'app/graph/range/Range';
-import { Style as TextStyle } from 'app/graph/text/Style';
 import { text } from 'app/graph/text/text';
+import { TextStyle } from 'app/graph/text/TextStyle';
 
 const OFFSET: number = 30;
 
@@ -18,7 +21,7 @@ const DEFAULT_LINE_STYLE: LineStyle = {
 const DEFAULT_TEXT_STYLE: TextStyle = {
     font: '10pt Arial',
     fillStyle: '#000000',
-    textAlign: 'left'
+    textAlign: 'right'
 };
 
 /**
@@ -110,20 +113,17 @@ export class Graph {
     public drawXLabels(step: number, textStyle: Partial<TextStyle> = {}): Graph {
         const styling: TextStyle = {
             ...DEFAULT_TEXT_STYLE,
-            ...textStyle
+            ...textStyle,
+            textAlign: 'center'
         };
-        let y: number = 0;
-
-        if (this._yRange.min > 0 || this._yRange.max < 0) {
-            y = this._yRange.min;
-        }
+        const y: number = inRange(0, this._yRange) ? 0 : this._yRange.min;
 
         for (const x of arr.iterator.range(this._xRange.min, this._xRange.max, step)) {
             const position: geometry.point.Point = this._transform.transformPoint({x, y});
 
             text(
                 String(x),
-                { x: position.x - 5, y: position.y + 15 },
+                { x: position.x, y: position.y + 15 },
                 styling,
                 this._background.context
             );
@@ -137,18 +137,14 @@ export class Graph {
             ...DEFAULT_TEXT_STYLE,
             ...textStyle
         };
-        let x: number = 0;
-
-        if (this._xRange.min > 0 || this._xRange.max < 0) {
-            x = this._xRange.min;
-        }
+        const x: number = inRange(0, this._xRange) ? 0: this._xRange.min;
 
         for (const y of arr.iterator.range(this._yRange.min, this._yRange.max, step)) {
             const point: geometry.point.Point = this._transform.transformPoint({x, y});
 
             text(
                 String(y),
-                { x: point.x - 30, y: point.y + 5 },
+                { x: point.x - 5, y: point.y + 5 },
                 styling,
                 this._background.context
             );
@@ -191,11 +187,7 @@ export class Graph {
             lineWidth: 2,
             ...lineStyle
         };
-        let y: number = 0;
-
-        if (this._yRange.min > 0 || this._yRange.max < 0) {
-            y = this._yRange.min;
-        }
+        const y: number = inRange(0, this._yRange) ? 0 : this._yRange.min;
 
         line(
             this._transform.transformPoint({ x: this._xRange.min, y }),
@@ -213,11 +205,7 @@ export class Graph {
             lineWidth: 2,
             ...lineStyle
         };
-        let x: number = 0;
-
-        if (this._xRange.min > 0 || this._xRange.max < 0) {
-            x = this._xRange.min;
-        }
+        const x: number = inRange(0, this._xRange) ? 0 : this._xRange.min;
 
         line(
             this._transform.transformPoint({ x, y: this._yRange.min }),
