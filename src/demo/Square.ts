@@ -1,10 +1,12 @@
+import * as animation from '@apestaartje/animation';
 import * as geometry from '@apestaartje/geometry';
 
-import { IAsset } from 'app/animation/stage/IAsset';
-
-export class Square implements IAsset {
-    private _color: string;
-    private _size: geometry.square.Square;
+/**
+ * A Square
+ */
+export class Square implements animation.stage.IAsset {
+    private readonly _color: string;
+    private readonly _size: geometry.square.Square;
 
     constructor(size: geometry.square.Square, color: string) {
         this._size = size;

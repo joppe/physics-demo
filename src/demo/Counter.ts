@@ -1,20 +1,22 @@
+import * as animation from '@apestaartje/animation';
 import * as geometry from '@apestaartje/geometry';
 
-import { FPS } from 'app/animation/fps/FPS';
-import { IAsset } from 'app/animation/stage/IAsset';
+/**
+ * A FPS counter
+ */
 
-export class Counter implements IAsset {
-    private _color: string;
-    private _fps: FPS;
-    private _font: string;
-    private _position: geometry.point.Point;
+export class Counter implements animation.stage.IAsset {
+    private readonly _color: string;
+    private readonly _fps: animation.fps.FPS;
+    private readonly _font: string;
+    private readonly _position: geometry.point.Point;
 
     constructor(position: geometry.point.Point, font: string, color: string) {
         this._position = position;
         this._font = font;
         this._color = color;
 
-        this._fps = new FPS();
+        this._fps = new animation.fps.FPS();
     }
 
     public render(context: CanvasRenderingContext2D): void {
