@@ -10,10 +10,11 @@ const config = {
 
     devtool: 'source-map',
 
-    entry: [
-        './sass/main.jscss',
-        './src/main.ts',
-    ],
+    entry: {
+        'css/main': './sass/main.jscss',
+        'js/main': './src/main.ts',
+        'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
+    },
 
     module: {
         rules: [
