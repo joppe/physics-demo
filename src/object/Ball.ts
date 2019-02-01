@@ -1,6 +1,6 @@
 import * as animation from '@apestaartje/animation';
 
-import {Particle} from 'src/physics/object/Particle';
+import { Particle } from '../physics/object/Particle';
 
 /**
  * A Ball
