@@ -1,65 +1,76 @@
-import * as animation from '@apestaartje/animation';
+import * as array from '@apestaartje/array';
 import * as geometry from '@apestaartje/geometry';
-import * as graph from '@apestaartje/graph';
 import * as number from '@apestaartje/number';
+import { Animator } from 'app/animation/animator';
+import { Time } from 'app/animation/animator/Time';
+import { Layer, Stage } from 'app/animation/stage';
+import { Ball } from 'app/object/Ball';
+import { gravity } from 'app/physics/force/gravity/gravity';
 
-/**
- * Create a graph
- */
+const stage: Stage = new Stage(
+    document.body,
+    { width: 800, height: 800}
+);
 
-const g: graph.Graph = new graph.Graph({
-   height: 600,
-   width: 600
-});
+const staticLayer: Layer = stage.getLayer('root');
+staticLayer.color = '#000000';
+staticLayer.freeze(true);
 
-g
-    .drawGrid(50, 50)
-    .drawXAxis()
-    .drawYAxis()
-    .drawYLabels(50)
-    .drawXLabels(100);
+const dynamicLayer: Layer = stage.createLayer('planet', 10);
 
-g.render(document.querySelector('body'));
+const sun: Ball = new Ball(70, '#ff9900', 1000000);
+sun.position = {
+    x: 275,
+    y: 200
+};
+staticLayer.addAsset(sun, 'sun', 10);
 
-function sinus(xRange: number.range.Range, xOffset: number, yOffset: number, step: number, amplitude: number): Iterable<geometry.point.Point> {
-    return {
-        // tslint:disable-next-line function-name
-        [Symbol.iterator](): Iterator<geometry.point.Point> {
-            let x: number = xRange.min;
+const planet: Ball = new Ball(10, '#0000ff', 1);
+planet.position = {
+    x: 200,
+    y: 50
+};
+planet.velocity = {
+    x: 80,
+    y: -40
+};
+dynamicLayer.addAsset(planet, 'planet', 20);
 
-            return {
-                next(): IteratorResult<geometry.point.Point> {
-                    const point: geometry.point.Point = {
-                        x: xOffset + x,
-                        y: (Math.sin((x / 300) * Math.PI) * amplitude) + yOffset
-                    };
+for (const index of array.iterator.range(1, 100, 1)) {
+    const star: Ball = new Ball(number.random(1, 2), '#ffff00', 1000000);
 
-                    x += step;
-
-                    return {
-                        value: point,
-                        done: x > xRange.max
-                    };
-                }
-            };
-        }
+    star.position = {
+        x: number.random(0, stage.size.width),
+        y: number.random(0, stage.size.height)
     };
+
+    staticLayer.addAsset(star, `star-${index}`, 5);
 }
 
-let offset: number = 0;
+const animator: Animator = new Animator((time: Time): boolean => {
+    const dt: number = time.offset * 0.001;
 
-const anim: animation.animator.Animator = new animation.animator.Animator((): boolean => {
-    g.plot(sinus(
-        { min: -600, max: 600},
-        offset % 600,
-        300,
-        10,
-        300
-    ));
+    planet.position = geometry.vector.add(
+        planet.position,
+        geometry.vector.scale(planet.velocity, dt)
+    );
 
-    offset += 10;
+    stage.render();
+
+    const force: geometry.vector.Vector = gravity(
+        sun.mass,
+        planet.mass,
+        geometry.vector.subtract(planet.position, sun.position),
+        1
+    );
+    const acceleration: geometry.vector.Vector = geometry.vector.scale(force, 1 / planet.mass);
+
+    planet.velocity = geometry.vector.add(
+        planet.velocity,
+        geometry.vector.scale(acceleration, dt)
+    );
 
     return true;
 });
 
-anim.start();
+animator.start();

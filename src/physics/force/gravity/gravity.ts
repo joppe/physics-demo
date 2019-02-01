@@ -7,7 +7,7 @@ export const GRAVITATIONAL_CONSTANT: number = 6.67e-11;
  */
 
 export function force(m1: number, m2: number, distance: number, G: number = GRAVITATIONAL_CONSTANT): number {
-    return (G * m1 * m2) / (length * length);
+    return (G * m1 * m2) / (distance * distance);
 }
 
 export function gravity(m1: number, m2: number, v: geometry.vector.Vector, G: number = GRAVITATIONAL_CONSTANT): geometry.vector.Vector {
