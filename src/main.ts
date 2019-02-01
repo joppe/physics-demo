@@ -1,7 +1,7 @@
 import * as array from '@apestaartje/array';
 import * as geometry from '@apestaartje/geometry';
 import * as number from '@apestaartje/number';
-import { Animator } from 'app/animation/animator';
+import { Animator } from 'app/animation/animator/Animator';
 import { Time } from 'app/animation/animator/Time';
 import { Layer, Stage } from 'app/animation/stage';
 import { Ball } from 'app/object/Ball';
