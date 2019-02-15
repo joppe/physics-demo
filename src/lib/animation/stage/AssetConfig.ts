@@ -1,11 +1,11 @@
-import { IAsset } from './IAsset';
+import { Asset } from './Asset';
 
 /**
  * Configuration for adding an Asset to a Layer
  */
 
-export interface IAssetConfig {
-    asset: IAsset;
+export interface AssetConfig {
+    asset: Asset;
     depth: number;
     id: string;
 }

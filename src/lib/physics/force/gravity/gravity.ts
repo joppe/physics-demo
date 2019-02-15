@@ -1,6 +1,6 @@
 import * as geometry from '@apestaartje/geometry';
 
-export const GRAVITATIONAL_CONSTANT: number = 6.67e-11;
+import { GRAVITATIONAL_CONSTANT } from './gravitational-constant';
 
 /**
  * Create a gravity vector

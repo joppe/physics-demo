@@ -13,7 +13,7 @@ const config = {
     entry: {
         'css/main': './sass/main.jscss',
         'js/main': './src/main.ts',
-        'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
+        // 'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
     },
 
     module: {
@@ -56,7 +56,9 @@ const config = {
     },
     resolve: {
         alias: {
-            app: path.resolve(__dirname, 'src')
+            '@apestaartje/animation': path.resolve(__dirname, 'src/lib/animation'),
+            '@apestaartje/physics': path.resolve(__dirname, 'src/lib/physics'),
+            app: path.resolve(__dirname, 'src'),
         },
         extensions: ['.tsx', '.ts', '.js']
     },

@@ -6,6 +6,9 @@
     "jsRules": {},
     "rules": {
         "array-type": false,
+        "callable-types": false,
+        "export-name": false,
+        "interface-name": false,
         "missing-jsdoc": false,
         "no-implicit-dependencies": false,
         "no-relative-imports": false,

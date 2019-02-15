@@ -4,7 +4,7 @@ import * as geometry from '@apestaartje/geometry';
 /**
  * A Square
  */
-export class Square implements animation.stage.IAsset {
+export class Square implements animation.stage.Asset {
     private readonly _color: string;
     private readonly _size: geometry.square.Square;
 

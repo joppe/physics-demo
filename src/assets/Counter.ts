@@ -5,7 +5,7 @@ import * as geometry from '@apestaartje/geometry';
  * A FPS counter
  */
 
-export class Counter implements animation.stage.IAsset {
+export class Counter implements animation.stage.Asset {
     private readonly _color: string;
     private readonly _fps: animation.fps.FPS;
     private readonly _font: string;

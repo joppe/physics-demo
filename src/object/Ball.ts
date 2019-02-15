@@ -1,12 +1,11 @@
 import * as animation from '@apestaartje/animation';
-
-import { Particle } from '../physics/object/Particle';
+import * as physics from '@apestaartje/physics';
 
 /**
  * A Ball
  */
 
-export class Ball extends Particle implements animation.stage.IAsset {
+export class Ball extends physics.object.Particle implements animation.stage.Asset {
     private readonly _color: string;
     private readonly _radius: number;
 

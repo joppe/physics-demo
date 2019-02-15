@@ -37,7 +37,6 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
-    "@apestaartje/animation": "^1.1.0",
     "@apestaartje/array": "^1.1.0",
     "@apestaartje/dom": "^1.1.0",
     "@apestaartje/geometry": "^1.2.2",

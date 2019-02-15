@@ -1,7 +1,7 @@
 import * as geometry from '@apestaartje/geometry';
 
-import { ILayerConfig } from './ILayerConfig';
 import { Layer } from './Layer';
+import { LayerConfig } from './LayerConfig';
 
 /**
  * The main Stage
@@ -9,7 +9,7 @@ import { Layer } from './Layer';
 
 export class Stage {
     private readonly _container: HTMLElement;
-    private _layerConfigs: Array<ILayerConfig> = [];
+    private _layerConfigs: Array<LayerConfig> = [];
     private readonly _size: geometry.size.Size;
 
     get size(): geometry.size.Size {
@@ -31,13 +31,13 @@ export class Stage {
 
     public createLayer(id: string, depth: number): Layer {
         const layer: Layer = new Layer(this._container, this._size);
-        const layerConfigs: Array<ILayerConfig> = this._layerConfigs.concat({
+        const layerConfigs: Array<LayerConfig> = this._layerConfigs.concat({
             depth,
             id,
             layer
         });
 
-        layerConfigs.sort((a: ILayerConfig, b: ILayerConfig): number => {
+        layerConfigs.sort((a: LayerConfig, b: LayerConfig): number => {
             if (a.depth < b.depth) {
                 return -1;
             }
@@ -55,13 +55,13 @@ export class Stage {
     }
 
     public removeLayer(id: string): void {
-        this._layerConfigs = this._layerConfigs.filter((layerConfig: ILayerConfig): boolean => {
+        this._layerConfigs = this._layerConfigs.filter((layerConfig: LayerConfig): boolean => {
             return layerConfig.id !== id;
         });
     }
 
     public getLayer(id: string): Layer {
-        const layerConfig: ILayerConfig | undefined = this._layerConfigs.find((config: ILayerConfig): boolean => {
+        const layerConfig: LayerConfig | undefined = this._layerConfigs.find((config: LayerConfig): boolean => {
             return config.id === id;
         });
 
@@ -73,7 +73,7 @@ export class Stage {
     }
 
     public render(): void {
-        this._layerConfigs.forEach((layerConfig: ILayerConfig): void => {
+        this._layerConfigs.forEach((layerConfig: LayerConfig): void => {
             layerConfig.layer.render();
         });
     }

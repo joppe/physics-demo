@@ -1,4 +1,4 @@
-export type Time = {
+export type Chronometer = {
     start: number;
     current: number;
     offset: number;

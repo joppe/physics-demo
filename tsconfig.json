@@ -5,6 +5,12 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "paths": {
+            "@apestaartje/animation": [
+                "./src/lib/animation"
+            ],
+            "@apestaartje/physics": [
+                "./src/lib/physics"
+            ],
             "app/*": [
                 "./src/*"
             ]

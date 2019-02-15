@@ -1,15 +1,15 @@
 import * as dom from '@apestaartje/dom';
 import * as geometry from '@apestaartje/geometry';
 
-import { IAsset } from './IAsset';
-import { IAssetConfig } from './IAssetConfig';
+import { Asset } from './Asset';
+import { AssetConfig } from './AssetConfig';
 
 /**
  * A animatable layer
  */
 
 export class Layer {
-    private _assetConfigs: Array<IAssetConfig> = [];
+    private _assetConfigs: Array<AssetConfig> = [];
     private _canvas: dom.element.Canvas;
     private _isFrozen: boolean = false;
     private _isRendered: boolean = false;
@@ -27,14 +27,14 @@ export class Layer {
         this._canvas.appendTo(container);
     }
 
-    public addAsset(asset: IAsset, id: string, depth: number): void {
-        const assetConfigs: Array<IAssetConfig> = this._assetConfigs.concat({
+    public addAsset(asset: Asset, id: string, depth: number): void {
+        const assetConfigs: Array<AssetConfig> = this._assetConfigs.concat({
             asset,
             depth,
             id
         });
 
-        assetConfigs.sort((a: IAssetConfig, b: IAssetConfig): number => {
+        assetConfigs.sort((a: AssetConfig, b: AssetConfig): number => {
             if (a.depth < b.depth) {
                 return -1;
             }
@@ -50,13 +50,13 @@ export class Layer {
     }
 
     public removeAsset(id: string): void {
-        this._assetConfigs = this._assetConfigs.filter((assetConfig: IAssetConfig): boolean => {
+        this._assetConfigs = this._assetConfigs.filter((assetConfig: AssetConfig): boolean => {
             return assetConfig.id !== id;
         });
     }
 
-    public getAsset(id: string): IAsset {
-        const assetConfig: IAssetConfig | undefined = this._assetConfigs.find((config: IAssetConfig): boolean => {
+    public getAsset(id: string): Asset {
+        const assetConfig: AssetConfig | undefined = this._assetConfigs.find((config: AssetConfig): boolean => {
             return config.id === id;
         });
 
@@ -74,7 +74,7 @@ export class Layer {
 
         this._canvas.clear();
 
-        this._assetConfigs.forEach((assetConfig: IAssetConfig): void => {
+        this._assetConfigs.forEach((assetConfig: AssetConfig): void => {
             assetConfig.asset.render(this._canvas.context);
         });
 
