@@ -13,7 +13,9 @@ const config = {
     entry: {
         'css/main': './sass/main.jscss',
         'js/main': './src/main.ts',
-        // 'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
+        'js/demo/orbit': './src/demo/orbit.ts',
+        'js/demo/two-body': './src/demo/two-body.ts',
+        'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
     },
 
     module: {

@@ -75,7 +75,9 @@ export class Layer {
         this._canvas.clear();
 
         this._assetConfigs.forEach((assetConfig: AssetConfig): void => {
+            this._canvas.context.save();
             assetConfig.asset.render(this._canvas.context);
+            this._canvas.context.restore();
         });
 
         this._isRendered = true;

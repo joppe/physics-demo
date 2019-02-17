@@ -56,7 +56,7 @@ let offset: number = 0;
 
 const anim: animation.animator.Animator = new animation.animator.Animator((): boolean => {
     g.plot(sinus(
-        { min: -600, max: 600},
+        { min: -600, max: 600 },
         offset % 600,
         300,
         10,

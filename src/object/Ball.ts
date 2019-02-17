@@ -1,5 +1,6 @@
 import * as animation from '@apestaartje/animation';
 import * as physics from '@apestaartje/physics';
+import { circle } from 'app/draw/circle';
 
 /**
  * A Ball
@@ -17,18 +18,15 @@ export class Ball extends physics.object.Particle implements animation.stage.Ass
     }
 
     public render(context: CanvasRenderingContext2D): void {
-        context.fillStyle = this._color;
-        context.beginPath();
-        context.arc(
-            this.position.x,
-            this.position.y,
-            this._radius,
-            0,
-            Math.PI * 2,
-            true
+        circle(
+            context,
+            {
+                position: this.position,
+                color: this._color,
+                radius: this._radius,
+                empty: false
+            }
         );
-        context.closePath();
-        context.fill();
     }
 
     public cleanup(): boolean {
