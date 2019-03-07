@@ -7,10 +7,10 @@ import { zero } from '../force/zero';
  */
 
 export class Particle {
-    private _position: geometry.vector.Vector;
-    private _velocity: geometry.vector.Vector;
-    private readonly _charge: number;
-    private readonly _mass: number;
+    protected _charge: number;
+    protected _mass: number;
+    protected _position: geometry.vector.Vector;
+    protected _velocity: geometry.vector.Vector;
 
     get position(): geometry.vector.Vector {
         return this._position;
@@ -32,6 +32,10 @@ export class Particle {
         return this._mass;
     }
 
+    set mass(mass: number) {
+        this._mass = mass;
+    }
+
     get charge(): number {
         return this._charge;
     }
@@ -39,6 +43,7 @@ export class Particle {
     constructor(mass: number = 1, charge: number = 0) {
         this._mass = mass;
         this._charge = charge;
+
         this._position = zero();
         this._velocity = zero();
     }

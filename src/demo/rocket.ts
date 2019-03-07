@@ -2,11 +2,8 @@ import * as animation from '@apestaartje/animation';
 import * as array from '@apestaartje/array';
 import * as geometry from '@apestaartje/geometry';
 import * as number from '@apestaartje/number';
-import * as physics from 'app/lib/physics';
-import { acceleration } from 'app/lib/physics/move/acceleration';
+import * as physics from '@apestaartje/physics';
 
-import { position } from 'app/lib/physics/move/position';
-import { velocity } from 'app/lib/physics/move/velocity';
 import { Ball } from 'app/object/Ball';
 import { Rocket } from 'app/object/Rocket';
 
@@ -60,14 +57,14 @@ function calcVelocity(rocket: Rocket, planet: Ball, dt: number, G: number): geom
         rocket.force(dt)
     );
 
-    return velocity(rocket.velocity, acceleration(force, rocket.mass), dt);
+    return physics.move.velocity(rocket.velocity, physics.move.acceleration(force, rocket.mass), dt);
 }
 
 function createAnimator(planet: Ball, rocket: Rocket, stage: animation.stage.Stage): animation.animator.Animator {
     return new animation.animator.Animator((time: animation.animator.Chronometer): boolean => {
         const dt: number = time.offset * 0.001;
 
-        rocket.position = position(rocket.position, rocket.velocity, dt);
+        rocket.position = physics.move.position(rocket.position, rocket.velocity, dt);
 
         stage.render();
 
