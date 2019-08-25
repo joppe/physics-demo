@@ -9,5 +9,5 @@ import * as object from './object/index';
 export {
     force,
     move,
-    object
+    object,
 };

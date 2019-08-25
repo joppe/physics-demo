@@ -3,6 +3,7 @@
  */
 
 import * as gravity from './gravity/index';
+import * as spring from './spring/index';
 
 export * from './add';
 export * from './drag';
@@ -11,5 +12,6 @@ export * from './thrust';
 export * from './zero';
 
 export {
-    gravity
+    gravity,
+    spring,
 };

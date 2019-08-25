@@ -8,10 +8,23 @@ import * as number from '@apestaartje/number';
  */
 
 const g: graph.Graph = new graph.Graph({
-   height: 600,
-   width: 600
+    size: {
+        height: 600,
+        width: 600,
+    },
+    root: <HTMLElement>document.querySelector('body'),
 });
 
+g.setRange(
+    {
+        min: 0,
+        max: 600,
+    },
+    {
+        min: -300,
+        max: 300,
+    }
+);
 g
     .drawGrid(50, 50)
     .drawXAxis()
@@ -19,51 +32,24 @@ g
     .drawYLabels(50)
     .drawXLabels(100);
 
-g.render(document.querySelector('body'));
+g.render();
 
-function sinus(
-    xRange: number.range.Range,
-    xOffset: number,
-    yOffset: number,
-    step: number,
-    amplitude: number
-): Iterable<geometry.point.Point> {
-    return {
-        // tslint:disable-next-line function-name
-        [Symbol.iterator](): Iterator<geometry.point.Point> {
-            let x: number = xRange.min;
-
-            return {
-                next(): IteratorResult<geometry.point.Point> {
-                    const point: geometry.point.Point = {
-                        x: xOffset + x,
-                        y: (Math.sin((x / 300) * Math.PI) * amplitude) + yOffset
-                    };
-
-                    x += step;
-
-                    return {
-                        value: point,
-                        done: x > xRange.max
-                    };
-                }
-            };
-        }
-    };
-}
-
-let offset: number = 0;
+let x: number = 0;
+const amplitude: number = 400;
 
 const anim: animation.animator.Animator = new animation.animator.Animator((): boolean => {
-    g.plot(sinus(
-        { min: -600, max: 600 },
-        offset % 600,
-        300,
-        10,
-        300
-    ));
+    const point: geometry.point.Point = {
+        x,
+        y: (Math.sin((x / 300) * Math.PI) * 300) + 0,
+    };
 
-    offset += 10;
+    g.plot(point);
+
+    x += 1;
+
+    if (x >= 600) {
+        return false;
+    }
 
     return true;
 });

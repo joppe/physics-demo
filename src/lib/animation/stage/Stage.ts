@@ -9,7 +9,7 @@ import { LayerConfig } from './LayerConfig';
 
 export class Stage {
     private readonly _container: HTMLElement;
-    private _layerConfigs: Array<LayerConfig> = [];
+    private _layerConfigs: LayerConfig[] = [];
     private readonly _size: geometry.size.Size;
 
     get size(): geometry.size.Size {
@@ -31,10 +31,10 @@ export class Stage {
 
     public createLayer(id: string, depth: number): Layer {
         const layer: Layer = new Layer(this._container, this._size);
-        const layerConfigs: Array<LayerConfig> = this._layerConfigs.concat({
+        const layerConfigs: LayerConfig[] = this._layerConfigs.concat({
             depth,
             id,
-            layer
+            layer,
         });
 
         layerConfigs.sort((a: LayerConfig, b: LayerConfig): number => {

@@ -4,7 +4,7 @@
  * @see https://www.growingwiththeweb.com/2017/12/fast-simple-js-fps-counter.html
  */
 export class FPS {
-    private _frames: Array<number> = [];
+    private readonly _frames: number[] = [];
 
     public count(): number {
         const now: number = this.now();

@@ -2,10 +2,7 @@ import * as animation from '@apestaartje/animation';
 import * as geometry from '@apestaartje/geometry';
 import * as physics from '@apestaartje/physics';
 
-import { acceleration } from 'app/lib/physics/move/acceleration';
-import { position } from 'app/lib/physics/move/position';
-import { velocity } from 'app/lib/physics/move/velocity';
-import { Ball } from 'app/object/Ball';
+import { Ball } from '@demo/object/Ball';
 
 function createBall(radius: number, color: string, mass: number, pos: geometry.vector.Vector, vel?: geometry.vector.Vector): Ball {
     const ball: Ball = new Ball(radius, color, mass);
@@ -24,16 +21,16 @@ function calcBallVelocity(b1: Ball, b2: Ball, dt: number, G: number): geometry.v
         b1.mass,
         b2.mass,
         geometry.vector.subtract(b1.position, b2.position),
-        G
+        G,
     );
 
-    return velocity(b1.velocity, acceleration(force, b1.mass), dt);
+    return physics.move.velocity(b1.velocity, physics.move.acceleration(force, b1.mass), dt);
 }
 
-function createStage(size: geometry.size.Size, balls: Array<Ball>, ghosts: Array<Ball>): animation.stage.Stage {
+function createStage(size: geometry.size.Size, balls: Ball[], ghosts: Ball[]): animation.stage.Stage {
     const stage: animation.stage.Stage = new animation.stage.Stage(
         document.body,
-        size
+        size,
     );
 
     const staticLayer: animation.stage.Layer = stage.getLayer('root');
@@ -56,8 +53,8 @@ function createAnimator(ball1: Ball, ball2: Ball, stage: animation.stage.Stage):
     return new animation.animator.Animator((time: animation.animator.Chronometer): boolean => {
         const dt: number = time.offset * 0.001;
 
-        ball1.position = position(ball1.position, ball1.velocity, dt);
-        ball2.position = position(ball2.position, ball2.velocity, dt);
+        ball1.position = physics.move.position(ball1.position, ball1.velocity, dt);
+        ball2.position = physics.move.position(ball2.position, ball2.velocity, dt);
 
         stage.render();
 

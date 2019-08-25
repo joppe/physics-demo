@@ -9,8 +9,8 @@ import { AssetConfig } from './AssetConfig';
  */
 
 export class Layer {
-    private _assetConfigs: Array<AssetConfig> = [];
-    private _canvas: dom.element.Canvas;
+    private _assetConfigs: AssetConfig[] = [];
+    private readonly _canvas: dom.element.Canvas;
     private _isFrozen: boolean = false;
     private _isRendered: boolean = false;
 
@@ -28,10 +28,10 @@ export class Layer {
     }
 
     public addAsset(asset: Asset, id: string, depth: number): void {
-        const assetConfigs: Array<AssetConfig> = this._assetConfigs.concat({
+        const assetConfigs: AssetConfig[] = this._assetConfigs.concat({
             asset,
             depth,
-            id
+            id,
         });
 
         assetConfigs.sort((a: AssetConfig, b: AssetConfig): number => {

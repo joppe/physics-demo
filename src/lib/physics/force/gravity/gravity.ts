@@ -15,6 +15,6 @@ export function gravity(m1: number, m2: number, v: geometry.vector.Vector, G: nu
 
     return geometry.vector.scale(
         v,
-        -force(m1, m2, distance, G) / distance
+        -force(m1, m2, distance, G) / distance,
     );
 }

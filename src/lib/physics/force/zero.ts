@@ -7,6 +7,6 @@ import * as geometry from '@apestaartje/geometry';
 export function zero(): geometry.vector.Vector {
     return {
         x: 0,
-        y: 0
+        y: 0,
     };
 }

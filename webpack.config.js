@@ -12,10 +12,10 @@ const config = {
 
     entry: {
         'css/main': './sass/main.jscss',
-        'js/main': './src/main.ts',
-        'js/demo/orbit': './src/demo/orbit.ts',
-        'js/demo/move': './src/demo/move.ts',
-        'js/demo/two-body': './src/demo/two-body.ts',
+        'js/main': './src/demo/main.ts',
+        // 'js/demo/orbit': './src/demo/orbit.ts',
+        // 'js/demo/move': './src/demo/move.ts',
+        // 'js/demo/two-body': './src/demo/two-body.ts',
         'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
     },
 
@@ -31,12 +31,7 @@ const config = {
                 use: [
                     MiniCssExtractPlugin.loader,
                     {
-                        loader: 'css-loader',
-                        options: {
-                            minimize: {
-                                safe: true
-                            }
-                        }
+                        loader: 'css-loader'
                     },
                     {
                         loader: 'postcss-loader',
@@ -59,9 +54,8 @@ const config = {
     },
     resolve: {
         alias: {
-            '@apestaartje/animation': path.resolve(__dirname, 'src/lib/animation'),
-            '@apestaartje/physics': path.resolve(__dirname, 'src/lib/physics'),
-            app: path.resolve(__dirname, 'src'),
+            '@apestaartje': path.resolve(__dirname, 'src/lib'),
+            '@demo': path.resolve(__dirname, 'src/demo'),
         },
         extensions: ['.tsx', '.ts', '.js']
     },

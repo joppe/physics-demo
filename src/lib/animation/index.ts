@@ -9,5 +9,5 @@ import * as stage from './stage/index';
 export {
     animator,
     fps,
-    stage
+    stage,
 };

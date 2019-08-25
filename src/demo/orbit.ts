@@ -4,20 +4,17 @@ import * as geometry from '@apestaartje/geometry';
 import * as number from '@apestaartje/number';
 import * as physics from '@apestaartje/physics';
 
-import { acceleration } from 'app/lib/physics/move/acceleration';
-import { position } from 'app/lib/physics/move/position';
-import { velocity } from 'app/lib/physics/move/velocity';
-import { Ball } from 'app/object/Ball';
+import { Ball } from '@demo/object/Ball';
 
-function createStars(count: number, space: geometry.size.Size):  Array<Ball> {
-    const stars: Array<Ball> = [];
+function createStars(count: number, space: geometry.size.Size):  Ball[] {
+    const stars: Ball[] = [];
 
     for (const index of array.iterator.range(1, count, 1)) {
         const star: Ball = new Ball(number.random(1, 2), '#ffff00', 1000000);
 
         star.position = {
             x: number.random(0, space.width),
-            y: number.random(0, space.height)
+            y: number.random(0, space.height),
         };
 
         stars.push(star);
@@ -26,10 +23,10 @@ function createStars(count: number, space: geometry.size.Size):  Array<Ball> {
     return stars;
 }
 
-function createStage(sun: Ball, planet: Ball, stars: Array<Ball>, size: geometry.size.Size): animation.stage.Stage {
+function createStage(sun: Ball, planet: Ball, stars: Ball[], size: geometry.size.Size): animation.stage.Stage {
     const stage: animation.stage.Stage = new animation.stage.Stage(
         document.body,
-        size
+        size,
     );
 
     const staticLayer: animation.stage.Layer = stage.getLayer('root');
@@ -51,7 +48,7 @@ function createAnimator(sun: Ball, planet: Ball, stage: animation.stage.Stage): 
     return new animation.animator.Animator((time: animation.animator.Chronometer): boolean => {
         const dt: number = time.offset * 0.001;
 
-        planet.position = position(planet.position, planet.velocity, dt);
+        planet.position = physics.move.position(planet.position, planet.velocity, dt);
 
         stage.render();
 
@@ -59,10 +56,10 @@ function createAnimator(sun: Ball, planet: Ball, stage: animation.stage.Stage): 
             sun.mass,
             planet.mass,
             geometry.vector.subtract(planet.position, sun.position),
-            1
+            1,
         );
 
-        planet.velocity = velocity(planet.velocity, acceleration(force, planet.mass), dt);
+        planet.velocity = physics.move.velocity(planet.velocity, physics.move.acceleration(force, planet.mass), dt);
 
         return true;
     });
@@ -76,7 +73,7 @@ function main(size: geometry.size.Size, log: boolean = false): void {
     planet.position = { x: 200, y: 50 };
     planet.velocity = { x: 80, y: 0 };
 
-    const stars: Array<Ball> = createStars(100, size);
+    const stars: Ball[] = createStars(100, size);
     const stage: animation.stage.Stage = createStage(sun, planet, stars, size);
     const animator: animation.animator.Animator = createAnimator(sun, planet, stage);
 
@@ -89,7 +86,7 @@ function main(size: geometry.size.Size, log: boolean = false): void {
                 physics.force.gravity.escapeVelocity(
                     sun.mass,
                     geometry.vector.length(geometry.vector.subtract(planet.position, sun.position)),
-                    1
+                    1,
                 )}
         `);
     }

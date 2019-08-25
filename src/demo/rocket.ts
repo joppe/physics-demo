@@ -4,18 +4,18 @@ import * as geometry from '@apestaartje/geometry';
 import * as number from '@apestaartje/number';
 import * as physics from '@apestaartje/physics';
 
-import { Ball } from 'app/object/Ball';
-import { Rocket } from 'app/object/Rocket';
+import { Ball } from '@demo/object/Ball';
+import { Rocket } from '@demo/object/rocket/Rocket';
 
-function createStars(count: number, space: geometry.size.Size):  Array<Ball> {
-    const stars: Array<Ball> = [];
+function createStars(count: number, space: geometry.size.Size):  Ball[] {
+    const stars: Ball[] = [];
 
     for (const index of array.iterator.range(1, count, 1)) {
         const star: Ball = new Ball(number.random(1, 2), '#ffff00', 1000000);
 
         star.position = {
             x: number.random(0, space.width),
-            y: number.random(0, space.height)
+            y: number.random(0, space.height),
         };
 
         stars.push(star);
@@ -24,10 +24,10 @@ function createStars(count: number, space: geometry.size.Size):  Array<Ball> {
     return stars;
 }
 
-function createStage(planet: Ball, rocket: Rocket, stars: Array<Ball>, size: geometry.size.Size): animation.stage.Stage {
+function createStage(planet: Ball, rocket: Rocket, stars: Ball[], size: geometry.size.Size): animation.stage.Stage {
     const stage: animation.stage.Stage = new animation.stage.Stage(
         document.body,
-        size
+        size,
     );
 
     const staticLayer: animation.stage.Layer = stage.getLayer('root');
@@ -50,11 +50,11 @@ function calcVelocity(rocket: Rocket, planet: Ball, dt: number, G: number): geom
         rocket.mass,
         planet.mass,
         geometry.vector.subtract(rocket.position, planet.position),
-        G
+        G,
     );
     const force: geometry.vector.Vector = physics.force.add(
         gravity,
-        rocket.force(dt)
+        rocket.force(dt),
     );
 
     return physics.move.velocity(rocket.velocity, physics.move.acceleration(force, rocket.mass), dt);
@@ -83,14 +83,14 @@ function createRocket(x: number, y: number): Rocket {
             main: {
                 mass: 1,
                 dm: 0.3,
-                v: { x: 0, y: 10}
+                v: { x: 0, y: 10},
             },
             side: {
                 mass: 1,
                 dm: 0.1,
-                v: { x: 5, y: 0}
-            }
-        }
+                v: { x: 5, y: 0},
+            },
+        },
     });
     rocket.position = { x, y };
     rocket.startThrust('main', 1);
@@ -120,7 +120,7 @@ function main(size: geometry.size.Size): void {
     planet.position = { x: 400, y: 400 };
 
     const rocket: Rocket = createRocket(400, 300);
-    const stars: Array<Ball> = createStars(100, size);
+    const stars: Ball[] = createStars(100, size);
     const stage: animation.stage.Stage = createStage(planet, rocket, stars, size);
     const animator: animation.animator.Animator = createAnimator(planet, rocket, stage);
 

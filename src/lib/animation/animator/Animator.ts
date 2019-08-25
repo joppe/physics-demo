@@ -5,14 +5,16 @@ import { Chronometer } from './Chronometer';
  * This animator uses the RAF of the browser
  */
 
-type AnimatableWrapper = (time: number) => void;
+interface AnimatableWrapper {
+    (time: number): void;
+}
 
 export class Animator {
-    private _chronometer: Chronometer = {
+    private readonly _chronometer: Chronometer = {
         start: 0,
         offset: 0,
         current: 0,
-        elapsed: 0
+        elapsed: 0,
     };
     private _id: number;
     private _isPlaying: boolean = false;
