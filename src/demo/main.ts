@@ -13,33 +13,16 @@ const canvas: dom.element.Canvas = new dom.element.Canvas({
 
 canvas.appendTo(document.body);
 
-interface AnchorOptions {
-    diameter: number;
-    position: geometry.vector.Vector;
-    color: string;
+interface Stage {
+    render(context: CanvasRenderingContext2D, dt: number): void;
 }
 
-function renderAnchor(options: AnchorOptions, context: CanvasRenderingContext2D): void {
-    context.fillStyle = options.color;
-    context.beginPath();
-    context.arc(
-        options.position.x,
-        options.position.y,
-        options.diameter,
-        0,
-        Math.PI * 2,
-        true,
-    );
-    context.closePath();
-    context.fill();
-}
-
-interface BallOptions {
+interface RenderBallOptions {
     diameter: number;
     position: geometry.vector.Vector;
 }
 
-function renderBall(options: BallOptions, context: CanvasRenderingContext2D): void {
+function renderBall(text: string, options: RenderBallOptions, context: CanvasRenderingContext2D): void {
     context.fillStyle = '#00ff00';
     context.beginPath();
     context.arc(
@@ -52,16 +35,18 @@ function renderBall(options: BallOptions, context: CanvasRenderingContext2D): vo
     );
     context.closePath();
     context.fill();
+    context.fillStyle = '#000000';
+    context.font = '21px serif';
+    context.fillText(text, options.position.x, options.position.y);
 }
 
-interface LineOptions {
+interface RenderLineOptions {
     start: geometry.vector.Vector;
     end: geometry.vector.Vector;
-    color?: string;
 }
 
-function renderLine(options: LineOptions, context: CanvasRenderingContext2D): void {
-    context.strokeStyle = options.color !== undefined ? options.color : '#ff0000';
+function renderLine(options: RenderLineOptions, context: CanvasRenderingContext2D): void {
+    context.strokeStyle = '#ff0000';
     context.beginPath();
     context.moveTo(options.start.x, options.start.y);
     context.lineTo(options.end.x, options.end.y);
@@ -69,111 +54,71 @@ function renderLine(options: LineOptions, context: CanvasRenderingContext2D): vo
     context.stroke();
 }
 
-interface SpringOptions {
-    displacement: geometry.vector.Vector;
-    length: number;
-    mass: number;
-    position: geometry.vector.Vector;
-    isStart: boolean;
-    isEnd: boolean;
-}
-class Spring {
-    private _acceleration: geometry.vector.Vector = { x: 0, y: 0};
-    private _end: geometry.vector.Vector;
-    private readonly _isEnd: boolean;
-    private readonly _isStart: boolean;
-    private readonly _length: number;
-    private readonly _mass: number;
+class Ball {
+    private _acceleration: geometry.vector.Vector = { x: 0, y: 0 };
     private _position: geometry.vector.Vector;
-    private _velocity: geometry.vector.Vector = { x: 0, y: 0};
+    private readonly _index: number;
+    private _velocity: geometry.vector.Vector = { x: 0, y: 0 };
+    private readonly _diameter: number;
+    private readonly _isFixed: boolean;
+    private readonly _mass: number;
 
-    public get c(): number {
-        return 0.5;
-    }
-
-    public get damping(): geometry.vector.Vector {
-        return physics.force.spring.damping(this.c, this._velocity);
-    }
-
-    public get displacement(): geometry.vector.Vector {
-        return geometry.vector.subtract(this._end, this._position);
-    }
-
-    public get end(): geometry.vector.Vector {
-        return this._end;
-    }
-
-    public set end(end: geometry.vector.Vector) {
-        this._end = end;
-    }
-
-    public get extension(): geometry.vector.Vector {
-        const displacement: geometry.vector.Vector = this.displacement;
-        const unit: geometry.vector.Vector = geometry.vector.unit(displacement);
-        const inRest: geometry.vector.Vector = geometry.vector.scale(unit, this._length);
-
-        return geometry.vector.subtract(displacement, inRest);
-    }
-
-    public get k(): number {
-        return 15;
-    }
-
-    public get position(): geometry.vector.Vector {
+    get position(): geometry.vector.Vector {
         return this._position;
     }
 
-    public set position(position: geometry.vector.Vector) {
+    set position(position: geometry.vector.Vector) {
+        if (this._isFixed) {
+            return;
+        }
+
         this._position = position;
     }
 
-    public get restoring(): geometry.vector.Vector {
-        if (geometry.vector.length(this.displacement) < this._length) {
-            return { x: 0, y: 0};
-        }
-
-        return physics.force.spring.restoring(this.k, this.extension);
+    constructor(index: number, position: geometry.vector.Vector, diameter: number, mass: number, isFixed: boolean) {
+        this._index = index;
+        this._position = position;
+        this._isFixed = isFixed;
+        this._diameter = diameter;
+        this._mass = mass;
     }
 
-    constructor(options: SpringOptions) {
-        this._end = geometry.vector.add(options.position, options.displacement);
-        this._isEnd = options.isEnd;
-        this._isStart = options.isStart;
-        this._length = options.length;
-        this._mass = options.mass;
-        this._position = options.position;
+    public render(balls: Ball[], c: number, k: number, springLength: number, dt: number, context: CanvasRenderingContext2D): void {
+        this.tick(balls, c, k, springLength, dt);
+
+        renderBall(
+            String(this._index),
+            {
+                diameter: this._diameter,
+                position: this._position,
+            },
+            context,
+       );
     }
 
-    /**
-     * Use the displacement instead of the position
-     */
-    public tick(dt: number, previous: Spring | undefined, next: Spring | undefined): void {
-        // move
-        this.end = physics.move.position(this.end, this._velocity, dt);
-
-        // set the end of the other spring equal to the end of this spring
-        if (next !== undefined) {
-            // console.log('move next', next.position, this.end);
-            next.position = this.end;
+    private tick(balls: Ball[], c: number, k: number, springLength: number, dt: number): void {
+        if (this._isFixed) {
+            return;
         }
 
-        const forces: geometry.vector.Vector[] = [
-            this.damping,
-            this.restoring,
-        ];
+        this._position = physics.move.position(this._position, this._velocity, dt);
 
-        if (previous !== undefined) {
-            // console.log('previous.restoring', previous.restoring);
-            // forces.push(geometry.vector.negate(previous.restoring));
-            forces.push(previous.restoring);
-        }
+        const forces: geometry.vector.Vector[] = balls.map((ball: Ball): geometry.vector.Vector => {
+            const displacement: geometry.vector.Vector = geometry.vector.subtract(this._position, ball.position);
 
-        if (next !== undefined) {
-            // console.log('next.restoring', next.restoring);
-            forces.push(geometry.vector.negate(next.restoring));
-        }
+            // if (geometry.vector.length(displacement) <= springLength) {
+            //     return physics.force.zero();
+            // }
 
-        // force
+            const unit: geometry.vector.Vector = geometry.vector.unit(displacement);
+            const inRest: geometry.vector.Vector = geometry.vector.scale(unit, springLength);
+            const extension: geometry.vector.Vector = geometry.vector.subtract(displacement, inRest);
+
+            return physics.force.spring.restoring(k, extension);
+        });
+
+        forces.push(physics.force.spring.damping(c, this._velocity));
+
         const force: geometry.vector.Vector = physics.force.add(...forces);
 
         // acceleration
@@ -182,71 +127,43 @@ class Spring {
         // velocity
         this._velocity = physics.move.velocity(this._velocity, this._acceleration, dt);
     }
-
-    public render(context: CanvasRenderingContext2D): void {
-        renderAnchor(
-            {
-                diameter: 5,
-                position: this._position,
-                color: '#0000ff',
-            },
-            context,
-        );
-
-        renderLine(
-            {
-                start: this._position,
-                end: this._end,
-            },
-            context,
-        );
-
-        if (this._isEnd) {
-            renderAnchor(
-                {
-                    diameter: 5,
-                    position: this._end,
-                    color: '#ff0000',
-                },
-                context,
-            );
-        }
-    }
-
-    public increaseVelocity(v: geometry.vector.Vector): void {
-        console.log('increaseVelocity');
-        this._velocity = geometry.vector.add(this._velocity, v);
-    }
 }
 
-function springFactory(amount: number, length: number, offset: number, mass: number, isHorizontal: boolean): Spring[] {
-    const springs: Spring[] = [];
+function ballsFactory(amount: number, offset: number, distance: number): Ball[] {
+    const mass: number = 1;
+    const diameter: number = 10;
+    const balls: Ball[] = [];
 
     for (const index of array.iterator.range(0, amount - 1, 1)) {
-        const axis: number = offset + (index * length);
+        const x: number = offset + (index * distance);
 
-        springs.push(
-            new Spring({
-                displacement: { x: length, y : 0 },
-                length,
+        balls.push(
+            new Ball(
+                index,
+                { x, y: 200 },
+                diameter,
                 mass,
-                position: { x: isHorizontal ? axis : 100, y : isHorizontal ? 100 : axis },
-                isStart: index === 0,
-                isEnd: index === amount - 1,
-            }),
+                index === 0 || (index === amount - 1),
+            ),
         );
     }
 
-    return springs;
-}
-
-interface Stage {
-    render(context: CanvasRenderingContext2D, dt: number): void;
+    return balls;
 }
 
 const stage: Stage = ((): Stage => {
-    const SPRING_COUNT: number = 5;
-    const springs: Spring[] = springFactory(SPRING_COUNT, 100, 100, 1, true);
+    const BALL_COUNT: number = 5;
+    const BALL_OFFSET: number = 100;
+    const BALL_DISTANCE: number = 100;
+    const C: number = 2;
+    const K: number = 15;
+
+    /**
+     * Create a set of balls.
+     * These balls are connected with springs.
+     * The two outer balls cannot move.
+     */
+    const balls: Ball[] = ballsFactory(BALL_COUNT, BALL_OFFSET, BALL_DISTANCE);
 
     const ALLOWED_KEYS: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
@@ -254,71 +171,29 @@ const stage: Stage = ((): Stage => {
         if (ALLOWED_KEYS.indexOf(event.key) === -1) {
             return;
         }
-        console.log(event.key);
-        /*/
-        switch (event.key) {
-            case '1':
-                springs[0].increaseVelocity({
-                    x: -200,
-                    y: 0,
-                });
-                springs[1].increaseVelocity({
-                    x: 200,
-                    y: 0,
-                });
-                break;
-            case '2':
-                springs[1].increaseVelocity({
-                    x: -200,
-                    y: 0,
-                });
-                springs[2].increaseVelocity({
-                    x: 200,
-                    y: 0,
-                });
-                break;
-            case '3':
-                springs[2].increaseVelocity({
-                    x: -200,
-                    y: 0,
-                });
-                springs[3].increaseVelocity({
-                    x: 200,
-                    y: 0,
-                });
-                break;
-            default:
-                console.log('??');
-        }
-        /**/
 
-        springs[1].increaseVelocity({
-            x: -200,
-            y: 0,
-        });
+        const a: Ball = balls[2];
+        const b: Ball = balls[3];
+        const offset: number = 50;
 
-        // window.setTimeout((): void => animator.stop(), 2000);
+        a.position = { x: a.position.x - offset, y: a.position.y };
+        b.position = { x: b.position.x + offset, y: b.position.y };
     });
 
     return {
         render(context: CanvasRenderingContext2D, dt: number): void {
-            springs.forEach((spring: Spring, index: number): void => {
-                const previous: Spring | undefined = index > 0 ? springs[index - 1] : undefined;
-                const next: Spring | undefined = index < (SPRING_COUNT - 1) ? springs[index + 1] : undefined;
+            balls.forEach((ball: Ball, index: number): void => {
+                const others: Ball[] = [];
 
-                spring.render(context);
-
-                if (index < (SPRING_COUNT - 1)) {
-                    renderBall(
-                        {
-                            diameter: 15,
-                            position: spring.end,
-                        },
-                        context,
-                    );
+                if (index > 0) {
+                    others.push(balls[index - 1]);
                 }
 
-                spring.tick(dt, previous, next);
+                if (index < (BALL_COUNT - 1)) {
+                    others.push(balls[index + 1]);
+                }
+
+                ball.render(others, C, K, BALL_DISTANCE, dt, context);
             });
         },
     };
@@ -335,7 +210,7 @@ const animator: animation.animator.Animator = new animation.animator.Animator((t
 
 animator.start();
 
-window.addEventListener('click', (): void => {
-    console.log('stop');
+window.addEventListener('dblclick', (): void => {
+    window.console.log('stop');
     animator.stop();
 });
