@@ -13,17 +13,27 @@ const canvas: dom.element.Canvas = new dom.element.Canvas({
 
 canvas.appendTo(document.body);
 
+function getRow(index: number, columns: number): number {
+    return Math.floor(index / columns);
+}
+
+function getColumn(index: number, columns: number): number {
+    return index % columns;
+}
+
 interface Stage {
     render(context: CanvasRenderingContext2D, dt: number): void;
 }
 
 interface RenderBallOptions {
+    color?: string;
     diameter: number;
     position: geometry.vector.Vector;
+    textColor?: string;
 }
 
 function renderBall(text: string, options: RenderBallOptions, context: CanvasRenderingContext2D): void {
-    context.fillStyle = '#00ff00';
+    context.fillStyle = options.color ? options.color : '#00ff00';
     context.beginPath();
     context.arc(
         options.position.x,
@@ -35,18 +45,19 @@ function renderBall(text: string, options: RenderBallOptions, context: CanvasRen
     );
     context.closePath();
     context.fill();
-    context.fillStyle = '#000000';
-    context.font = '21px serif';
+    context.fillStyle = options.textColor ? options.textColor : '#000000';
+    context.font = '12px serif';
     context.fillText(text, options.position.x, options.position.y);
 }
 
 interface RenderLineOptions {
     start: geometry.vector.Vector;
     end: geometry.vector.Vector;
+    color?: string;
 }
 
 function renderLine(options: RenderLineOptions, context: CanvasRenderingContext2D): void {
-    context.strokeStyle = '#ff0000';
+    context.strokeStyle = options.color ? options.color : '#ff0000';
     context.beginPath();
     context.moveTo(options.start.x, options.start.y);
     context.lineTo(options.end.x, options.end.y);
@@ -56,10 +67,10 @@ function renderLine(options: RenderLineOptions, context: CanvasRenderingContext2
 
 class Ball {
     private _acceleration: geometry.vector.Vector = { x: 0, y: 0 };
+    private _neighbours: Ball[] = [];
     private _position: geometry.vector.Vector;
-    private readonly _index: number;
     private _velocity: geometry.vector.Vector = { x: 0, y: 0 };
-    private readonly _diameter: number;
+
     private readonly _isFixed: boolean;
     private readonly _mass: number;
 
@@ -75,41 +86,29 @@ class Ball {
         this._position = position;
     }
 
-    constructor(index: number, position: geometry.vector.Vector, diameter: number, mass: number, isFixed: boolean) {
-        this._index = index;
+    constructor(position: geometry.vector.Vector, mass: number, isFixed: boolean) {
         this._position = position;
         this._isFixed = isFixed;
-        this._diameter = diameter;
         this._mass = mass;
     }
 
-    public render(balls: Ball[], c: number, k: number, springLength: number, dt: number, context: CanvasRenderingContext2D): void {
-        this.tick(balls, c, k, springLength, dt);
-
-        renderBall(
-            String(this._index),
-            {
-                diameter: this._diameter,
-                position: this._position,
-            },
-            context,
-       );
+    public registerNeighbours(neighbours: Ball[]): void {
+        this._neighbours = neighbours;
     }
 
-    private tick(balls: Ball[], c: number, k: number, springLength: number, dt: number): void {
+    public move(offset: geometry.vector.Vector): void {
+        this.position = geometry.vector.add(this._position, offset);
+    }
+
+    public tick(c: number, k: number, springLength: number, dt: number): void {
         if (this._isFixed) {
             return;
         }
 
         this._position = physics.move.position(this._position, this._velocity, dt);
 
-        const forces: geometry.vector.Vector[] = balls.map((ball: Ball): geometry.vector.Vector => {
-            const displacement: geometry.vector.Vector = geometry.vector.subtract(this._position, ball.position);
-
-            // if (geometry.vector.length(displacement) <= springLength) {
-            //     return physics.force.zero();
-            // }
-
+        const forces: geometry.vector.Vector[] = this._neighbours.map((neighbour: Ball): geometry.vector.Vector => {
+            const displacement: geometry.vector.Vector = geometry.vector.subtract(this._position, neighbour.position);
             const unit: geometry.vector.Vector = geometry.vector.unit(displacement);
             const inRest: geometry.vector.Vector = geometry.vector.scale(unit, springLength);
             const extension: geometry.vector.Vector = geometry.vector.subtract(displacement, inRest);
@@ -129,41 +128,79 @@ class Ball {
     }
 }
 
-function ballsFactory(amount: number, offset: number, distance: number): Ball[] {
-    const mass: number = 1;
-    const diameter: number = 10;
+function ballsFactory(mass: number, amount: number, perRow: number, offset: number, distance: number): Ball[] {
     const balls: Ball[] = [];
+    const rows: number = amount / perRow;
 
     for (const index of array.iterator.range(0, amount - 1, 1)) {
-        const x: number = offset + (index * distance);
+        const column: number = getColumn(index, perRow);
+        const row: number = getRow(index, perRow);
+        const x: number = offset + (column * distance);
+        const y: number = offset + (row * distance);
+        const ifFixed: boolean = column === 0 || column === (perRow - 1) || row === 0 || row === (rows - 1);
 
         balls.push(
             new Ball(
-                index,
-                { x, y: 200 },
-                diameter,
+                { x, y },
                 mass,
-                index === 0 || (index === amount - 1),
+                ifFixed,
             ),
         );
     }
 
+    balls.forEach((ball: Ball, index: number): void => {
+        const neighbours: Ball[] = [];
+        const column: number = getColumn(index, perRow);
+        const row: number = getRow(index, perRow);
+
+        if (column > 0) {
+            neighbours.push(balls[index - 1]);
+        }
+        if (column < (perRow - 1)) {
+            neighbours.push(balls[index + 1]);
+        }
+        if (row > 0) {
+            neighbours.push(balls[index - perRow]);
+        }
+        if (row < (rows - 1)) {
+            neighbours.push(balls[index + perRow]);
+        }
+
+        ball.registerNeighbours(neighbours);
+    });
+
     return balls;
 }
 
+/**
+ * +-+-+-+-+-+
+ * | | | | | |
+ * +-+-+-+-+-+
+ * | |1|2|3| |
+ * +-+-+-+-+-+
+ * | |4|5|6| |
+ * +-+-+-+-+-+
+ * | |7|8|9| |
+ * +-+-+-+-+-+
+ * | | | | | |
+ * +-+-+-+-+-+
+ */
 const stage: Stage = ((): Stage => {
-    const BALL_COUNT: number = 5;
+    const ROWS: number = 6;
+    const COLUMNS: number = 6;
+    const BALL_COUNT: number = ROWS * COLUMNS;
     const BALL_OFFSET: number = 100;
-    const BALL_DISTANCE: number = 100;
+    const BALL_DISTANCE: number = 50;
     const C: number = 2;
     const K: number = 15;
+    const displacement: number = 20;
 
     /**
      * Create a set of balls.
      * These balls are connected with springs.
      * The two outer balls cannot move.
      */
-    const balls: Ball[] = ballsFactory(BALL_COUNT, BALL_OFFSET, BALL_DISTANCE);
+    const balls: Ball[] = ballsFactory(1, BALL_COUNT, COLUMNS, BALL_OFFSET, BALL_DISTANCE);
 
     const ALLOWED_KEYS: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
@@ -172,28 +209,31 @@ const stage: Stage = ((): Stage => {
             return;
         }
 
-        const a: Ball = balls[2];
-        const b: Ball = balls[3];
-        const offset: number = 50;
+        const n: number = parseInt(event.key, 10);
+        const index: number = n - 1;
+        const column: number = getColumn(index, 3);
+        const row: number = getRow(index, 3);
+        const topLeftIndex: number = COLUMNS * (row + 1) + (column + 1);
+        const topRightIndex: number = topLeftIndex + 1;
+        const bottomLeftIndex: number = topLeftIndex + COLUMNS;
+        const bottomRightIndex: number = bottomLeftIndex + 1;
 
-        a.position = { x: a.position.x - offset, y: a.position.y };
-        b.position = { x: b.position.x + offset, y: b.position.y };
+        balls[topLeftIndex].move({ x: -displacement, y: -displacement });
+        balls[topRightIndex].move({ x: displacement, y: -displacement });
+        balls[bottomLeftIndex].move({ x: -displacement, y: displacement });
+        balls[bottomRightIndex].move({ x: displacement, y: displacement });
     });
 
     return {
         render(context: CanvasRenderingContext2D, dt: number): void {
             balls.forEach((ball: Ball, index: number): void => {
-                const others: Ball[] = [];
+                renderBall(
+                    String(index),
+                    { diameter: 5, position: ball.position },
+                    context,
+                );
 
-                if (index > 0) {
-                    others.push(balls[index - 1]);
-                }
-
-                if (index < (BALL_COUNT - 1)) {
-                    others.push(balls[index + 1]);
-                }
-
-                ball.render(others, C, K, BALL_DISTANCE, dt, context);
+                ball.tick(C, K, BALL_DISTANCE, dt);
             });
         },
     };
