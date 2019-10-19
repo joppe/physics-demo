@@ -12,11 +12,7 @@ const config = {
 
     entry: {
         'css/main': './sass/main.jscss',
-        'js/main': './src/demo/main.ts',
-        // 'js/demo/orbit': './src/demo/orbit.ts',
-        // 'js/demo/move': './src/demo/move.ts',
-        // 'js/demo/two-body': './src/demo/two-body.ts',
-        'js/demo/walking-sinus': './src/demo/walking-sinus.ts'
+        'js/main': './src/nervous-matrix/main.ts',
     },
 
     module: {
@@ -54,8 +50,8 @@ const config = {
     },
     resolve: {
         alias: {
-            '@apestaartje': path.resolve(__dirname, 'src/lib'),
-            '@demo': path.resolve(__dirname, 'src/demo'),
+            '@apestaartje': path.resolve(__dirname, 'src/apestaartje'),
+            '@nervous-matrix': path.resolve(__dirname, 'src/nervous-matrix'),
         },
         extensions: ['.tsx', '.ts', '.js']
     },

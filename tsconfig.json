@@ -6,10 +6,10 @@
       "moduleResolution": "node",
       "paths": {
           "@apestaartje/*": [
-              "./src/lib/*"
+              "./src/apestaartje/*"
           ],
-          "@demo/*": [
-              "./src/demo/*"
+          "@nervous-matrix/*": [
+              "./src/nervous-matrix/*"
           ]
       },
       "removeComments": true,
