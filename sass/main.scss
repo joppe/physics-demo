@@ -1,8 +1,16 @@
 body {
     margin: 0;
-    padding: 0;
+    padding: 20px;
     background: #fff;
     font-family: "DejaVu Sans Condensed", Arial;
     font-size: 16px;
     line-height: 1;
+}
+
+div.text {
+    margin-bottom: 40px;
+}
+
+input[type="file"] {
+    display: block;
 }
