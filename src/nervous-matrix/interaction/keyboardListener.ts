@@ -8,10 +8,10 @@ export function keyboardListener(displacement: number, matrix: Matrix, mapping: 
     function  move(index: number): void {
         const cell: Cell = matrix.getCell(index);
 
-        cell.topLine.move({ x: 0, y: -displacement });
-        cell.bottomLine.move({ x: 0, y: displacement });
-        cell.leftLine.move({ x: -displacement, y: 0 });
-        cell.rightLine.move({ x: displacement, y: 0 });
+        cell.topLine.push({ x: 0, y: -displacement });
+        cell.bottomLine.push({ x: 0, y: displacement });
+        cell.leftLine.push({ x: -displacement, y: 0 });
+        cell.rightLine.push({ x: displacement, y: 0 });
     }
 
     function isAllowedKey(key: string): boolean {

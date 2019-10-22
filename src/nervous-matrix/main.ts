@@ -10,8 +10,11 @@ import { Matrix } from '@nervous-matrix/matrix/Matrix';
 const COLS: number = 6;
 const ROWS: number = 6;
 const DISTANCE: number = 100;
-const DISPLACEMENT: number = 60;
+const DISPLACEMENT: number = 120;
 const OFFSET: number = 50;
+
+const c: number = 0.8;
+const k: number = 8;
 
 const container: HTMLElement = <HTMLElement>document.querySelector('.js-container');
 const size: geometry.size.Size = {
@@ -30,8 +33,8 @@ const mapping: Mapping = {
     9: 18,
 };
 const matrix: Matrix = new Matrix({
-    c: 2,
-    k: 15,
+    c: c,
+    k: k,
     mass: 1,
     cols: COLS,
     rows: ROWS,
@@ -63,8 +66,3 @@ const animator: animation.animator.Animator = new animation.animator.Animator((t
 });
 
 animator.start();
-
-window.addEventListener('dblclick', (): void => {
-    window.console.log('stop');
-    animator.stop();
-});

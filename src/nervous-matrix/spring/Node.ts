@@ -17,10 +17,6 @@ export class Node {
         return this._position;
     }
 
-    set position(position: geometry.vector.Vector) {
-        this._position = position;
-    }
-
     public constructor(options: NodeOptions) {
         this._position = options.position;
         this._mass = options.mass;
@@ -33,8 +29,8 @@ export class Node {
         this._neighbours = neighbours;
     }
 
-    public move(offset: geometry.vector.Vector): void {
-        this.position = geometry.vector.add(this._position, offset);
+    public push(offset: geometry.vector.Vector): void {
+        this._velocity = geometry.vector.add(this._velocity, offset);
     }
 
     public tick(dt: number): void {
