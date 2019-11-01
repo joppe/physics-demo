@@ -6,9 +6,8 @@ import { Mapping } from '@nervous-matrix/Mapping';
 import { line } from '@nervous-matrix/render/line';
 import { Node } from '@nervous-matrix/spring/Node';
 import { GridItem } from '@nervous-matrix/render/GridItem';
-import { loader } from '@nervous-matrix/image/loader';
 import { GridOptions } from '@nervous-matrix/render/GridOptions';
-import {Cell} from '@nervous-matrix/matrix/Cell';
+import { Cell } from '@nervous-matrix/matrix/Cell';
 
 export class Grid {
     private readonly _matrix: Matrix;
@@ -17,14 +16,14 @@ export class Grid {
     private readonly _size: geometry.size.Size;
     private _image: HTMLImageElement | undefined;
 
+    public set image(image: HTMLImageElement | undefined) {
+        this._image = image;
+    }
+
     public constructor(options: GridOptions) {
         this._matrix = options.matrix;
         this._mapping = options.mapping;
         this._size = options.size;
-
-        loader(options.container, (image: HTMLImageElement | undefined): void => {
-            this._image = image;
-        });
 
         const total: number = (options.cols - 1) * (options.rows - 1);
 
@@ -121,18 +120,6 @@ export class Grid {
         }
 
         const scale: number = this._image.width / this._size.width;
-
-        context.drawImage(
-            <HTMLImageElement>this._image,
-            0,
-            0,
-            this._image.width,
-            this._image.height,
-            0,
-            0,
-            this._image.width / scale,
-            this._image.height / scale,
-        );
 
         this._items.forEach((item: GridItem): void => {
             context.drawImage(

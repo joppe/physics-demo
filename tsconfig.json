@@ -1,24 +1,21 @@
 {
   "compilerOptions": {
-      "baseUrl": "./",
-      "experimentalDecorators": true,
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "paths": {
-          "@apestaartje/*": [
-              "./src/apestaartje/*"
-          ],
-          "@nervous-matrix/*": [
-              "./src/nervous-matrix/*"
-          ]
-      },
-      "removeComments": true,
-      "sourceMap": true,
-      "strictBindCallApply": true,
-      "strictNullChecks": true,
-      "target": "es6"
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "paths": {
+      "@nervous-matrix/*": [
+        "./src/nervous-matrix/*"
+      ]
+    },
+    "removeComments": true,
+    "sourceMap": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "target": "es6"
   },
   "include": [
-      "src/**/*.ts"
+    "src/**/*.ts"
   ]
 }

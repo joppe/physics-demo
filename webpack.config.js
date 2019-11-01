@@ -12,7 +12,7 @@ const config = {
 
     entry: {
         'css/main': './sass/main.jscss',
-        'js/main': './src/nervous-matrix/main.ts',
+        'js/main': './src/main.ts',
     },
 
     module: {
@@ -50,7 +50,6 @@ const config = {
     },
     resolve: {
         alias: {
-            '@apestaartje': path.resolve(__dirname, 'src/apestaartje'),
             '@nervous-matrix': path.resolve(__dirname, 'src/nervous-matrix'),
         },
         extensions: ['.tsx', '.ts', '.js']

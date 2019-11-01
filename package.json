@@ -1,17 +1,15 @@
 {
-  "name": "physics-demo",
+  "name": "nervous-matrix",
   "version": "0.0.0",
   "description": "A project",
   "scripts": {
     "build": "webpack",
     "dev": "webpack-dev-server --content-base public/",
-    "lint": "tslint --config ./tslint.json --project tsconfig.json",
-    "test": "karma start karma.conf.js",
-    "test:watch": "karma start karma.conf.js --no-single-run --auto-watch"
+    "lint": "tslint --config ./tslint.json --project tsconfig.json"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/joppe/physics-demo"
+    "url": "https://github.com/joppe/nervous-matrix"
   },
   "author": {
     "name": "Joppe Aarts",
@@ -36,5 +34,12 @@
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@apestaartje/animation": "^2.0.0",
+    "@apestaartje/array": "^1.2.0",
+    "@apestaartje/dom": "^1.2.0",
+    "@apestaartje/geometry": "^1.4.1",
+    "@apestaartje/number": "^1.5.0",
+    "@apestaartje/physics": "^1.1.0"
+  }
 }

@@ -7,7 +7,7 @@ export function loader(container: HTMLElement, onSelect: SelectHandler): void {
     input.addEventListener('change', (event: Event): void => {
         const files: FileList | null = input.files;
 
-        if (files === null || files.length === 0 || !files[0].type.match('image.*')) {
+        if (files === null || files.length === 0 || files[0].type.match('image.*') === null) {
             onSelect(undefined);
 
             return;
